@@ -10,7 +10,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
-// The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(WCombatTrackerMod.MODID)
 public class WCombatTrackerMod
 {

@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "com.wachi.combat_tracker.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ILE",
+    "AddHealWithSource"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
