@@ -163,7 +163,7 @@ public class Combat {
         if(cR != null)
             old_participants.remove(cR);
 
-        NeoForge.EVENT_BUS.post(new CombatAddParticipantEvent(cL, this, cR != null));
+        NeoForge.EVENT_BUS.post(new CombatAddParticipantEvent(cL, this, cR));
         participants.add(cL);
         return cL;
     }
