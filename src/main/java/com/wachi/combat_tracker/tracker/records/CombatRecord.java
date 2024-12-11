@@ -25,7 +25,7 @@ public class CombatRecord {
     public recordType type;
 
     /**A map for every mod register its own data on combat records*/
-    final Map<ResourceLocation, Object> API_MAP = new HashMap<>();
+    public final Map<ResourceLocation, Object> API_MAP = new HashMap<>();
 
     public CombatRecord(UUID objetive, float value, UUID executor, recordType type){
         this.objetive = objetive;
