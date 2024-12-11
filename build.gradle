@@ -139,7 +139,7 @@ tasks.withType(ProcessResources).configureEach {
 
 // Additional task to generate a sources JAR
 tasks.create('sourcesJar', Jar) {
-    classifier = 'sources' // Sets the classifier for the artifact
+    archiveClassifier.set('sources') // Sets the classifier for the artifact
     from sourceSets.main.allSource // Include all source files
 }
 
