@@ -147,7 +147,7 @@ tasks.create('sourcesJar', Jar) {
 publishing {
     publications {
         create('mavenJava', MavenPublication) {
-            //from components.java
+            from components.java
 
             // Add the sources JAR to the publication
             artifact tasks.sourcesJar
