@@ -137,16 +137,30 @@ tasks.withType(ProcessResources).configureEach {
     }
 }
 
+// Additional task to generate a sources JAR
+tasks.create('sourcesJar', Jar) {
+    archiveClassifier.set('sources') // Sets the classifier for the artifact
+    from sourceSets.main.allSource // Include all source files
+}
+
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {
     publications {
-        register('mavenJava', MavenPublication) {
+        create('mavenJava', MavenPublication) {
             from components.java
+
+            // Add the sources JAR to the publication
+            artifact tasks.sourcesJar
         }
     }
     repositories {
         maven {
-            url "file://${project.projectDir}/repo"
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/wachipayox/w-combat-tracker"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
         }
     }
 }
@@ -154,18 +168,6 @@ publishing {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
-
-
-// for adding the javadoc start
-tasks.register('sourcesJar', Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier.set('sources')
-}
-
-artifacts {
-    archives tasks.named('sourcesJar')
-}
-// for adding the javadoc end
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
 idea {
