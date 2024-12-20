@@ -4,6 +4,7 @@ import com.wachi.combat_tracker.Config;
 import com.wachi.combat_tracker.events.deathmessage.DeathMessageResultEvent;
 import com.wachi.combat_tracker.events.deathmessage.KillerAddedInDeathMessageEvent;
 import com.wachi.combat_tracker.events.deathmessage.KillerLoggedInDeathEvent;
+import com.wachi.combat_tracker.accessor.ILE;
 import com.wachi.combat_tracker.tracker.DeathDistributor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -25,7 +26,7 @@ public class CombatDeathMessageProvider implements IDeathMessageProvider {
 
     @Override
     public Component getDeathMessage(LivingEntity entity, CombatEntry lastEntry, @Nullable CombatEntry mostSignificantFall) {
-        DeathDistributor DD = new DeathDistributor(entity);
+        DeathDistributor DD = ((ILE) entity).getDeadDistributor();
         Map<UUID, Float> killers = DD.result_map; // All killers and points
         Map<Entity, Float> filtered = new HashMap<>(); // Only 10% up killers and percentage
         float total = 0;

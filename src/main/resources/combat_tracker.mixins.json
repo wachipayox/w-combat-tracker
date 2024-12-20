@@ -6,7 +6,7 @@
     "AddHealWithSource",
     "ChangeIDeathMessageProvider",
     "ChangeKillerEntityDisplayNameWithEvent",
-    "ILE"
+    "LivingDistributor"
   ],
   "injectors": {
     "defaultRequire": 1

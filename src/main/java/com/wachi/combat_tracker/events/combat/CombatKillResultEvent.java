@@ -1,6 +1,5 @@
 package com.wachi.combat_tracker.events.combat;
 
-import com.wachi.combat_tracker.WCombatTrackerMod;
 import com.wachi.combat_tracker.tracker.Combat;
 import com.wachi.combat_tracker.tracker.records.CombatRecord;
 import net.minecraft.world.entity.Entity;

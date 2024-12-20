@@ -2,13 +2,14 @@ package com.wachi.combat_tracker.tracker;
 
 import com.wachi.combat_tracker.WCombatTrackerMod;
 import com.wachi.combat_tracker.events.LivingHealWithSourceEvent;
-import com.wachi.combat_tracker.mixins.ILE;
+import com.wachi.combat_tracker.accessor.ILE;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.NotNull;
@@ -67,9 +68,18 @@ public class CombatManager {
             c.onHeal(healed, healer, amount);
     }
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    static void onDie(LivingDeathEvent event){
+        if(event.isCanceled() || getCombat(event.getEntity()) == null)
+            return;
+
+        DeathDistributor DD = new DeathDistributor(event.getEntity());
+        ((ILE) event.getEntity()).setDeadDistributor(DD);
+    }
+
 
     /**Obtains the combat of two entities, if the both combats aren't the same, them will be mixed. If one entity isn't in combat
-     * it will be added to it and viceversa.
+     * it will be added to the other's combat and viceversa.
      * @param startIfNoCombat if true the game will create a new combat in case both entities aren't in any combat
      * @return the result combat
      * */
