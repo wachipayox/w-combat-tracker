@@ -2,17 +2,10 @@ package com.wachi.combat_tracker.tracker;
 
 import com.wachi.combat_tracker.WCombatTrackerMod;
 import com.wachi.combat_tracker.events.LivingHealWithSourceEvent;
-import com.wachi.combat_tracker.events.deathmessage.KillerAddedInDeathMessageEvent;
 import com.wachi.combat_tracker.mixins.ILE;
-import com.wachi.combat_tracker.tracker.records.CombatRecord;
-import com.wachi.combat_tracker.tracker.records.DamageRecord;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Stray;
-import net.minecraft.world.entity.projectile.Arrow;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -53,7 +46,7 @@ public class CombatManager {
         if(source == null || victim.level().isClientSide)
             return;
 
-        Combat c = getOrCreateOrMixCombat(victim, source, amount, victim.isAlive() && !source.equals(victim));
+        Combat c = getOrCreateOrMixCombat(victim, source, victim.isAlive() && !source.equals(victim));
         if(c != null)
             c.onDamage(victim, dmgSrc, amount);
 
@@ -69,7 +62,7 @@ public class CombatManager {
         if(healer == null || healer.equals(healed) || healed.level().isClientSide || amount <= 0f)
             return;
 
-        Combat c = getOrCreateOrMixCombat(healed, healer, amount, false);
+        Combat c = getOrCreateOrMixCombat(healed, healer, false);
         if(c != null)
             c.onHeal(healed, healer, amount);
     }
@@ -81,7 +74,7 @@ public class CombatManager {
      * @return the result combat
      * */
     @Nullable
-    static Combat getOrCreateOrMixCombat(@NotNull Entity ent1, @NotNull Entity ent2, float amount, boolean startIfNoCombat) {
+    static Combat getOrCreateOrMixCombat(@NotNull Entity ent1, @NotNull Entity ent2, boolean startIfNoCombat) {
         Combat a = getCombat(ent1);
         Combat b = getCombat(ent2);
         Combat c = null;
@@ -92,7 +85,6 @@ public class CombatManager {
                 l.remove(b);
                 c = Combat.mix(a, b);
                 l.add(c);
-                a = null; b = null;
 
             } else { //if both entities are in the same combat
                 c = a;
@@ -111,23 +103,6 @@ public class CombatManager {
             l.add(c);
         }
         return c;
-    }
-
-    @SubscribeEvent
-    static void onnoseque(KillerAddedInDeathMessageEvent event){
-        if(event.killer instanceof Stray s && !event.isInHelpList){
-            Combat c = getCombat(event.killer);
-            MutableComponent x = Component.literal("");
-            if(c != null)
-                for(CombatRecord r : c.getActionsOfXtoY(event.killer.getUUID(), event.victim.getUUID()))
-                    if(r instanceof DamageRecord dr)
-                        if(dr.dmgSrc.getDirectEntity() instanceof Arrow) {
-                            x.append(s.getDisplayName());
-                            x.append("'s cold arrows");
-                            event.setKillerDisplayName(x);
-                            break;
-                        }
-        }
     }
 
     public static boolean isEntityInCombat(Entity ent){
