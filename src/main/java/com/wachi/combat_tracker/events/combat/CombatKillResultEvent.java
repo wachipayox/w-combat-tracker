@@ -32,7 +32,6 @@ public class CombatKillResultEvent extends Event {
         this.isLastHitter = isLastHitter;
         this.totalCombatScore = totalScore;
         this.ownScorePercentage = percentage;
-        WCombatTrackerMod.LOGGER.debug("created {}", totalScore);
     }
 
     public CombatKillResultEvent(UUID killer, Entity victim, float totalScore, float percentage, boolean isLastHitter, Combat combat, List<CombatRecord> actions){

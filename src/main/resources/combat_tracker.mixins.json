@@ -3,8 +3,10 @@
   "package": "com.wachi.combat_tracker.mixins",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "ILE",
-    "AddHealWithSource"
+    "AddHealWithSource",
+    "ChangeIDeathMessageProvider",
+    "ChangeKillerEntityDisplayNameWithEvent",
+    "ILE"
   ],
   "injectors": {
     "defaultRequire": 1

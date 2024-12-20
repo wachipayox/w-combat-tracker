@@ -1,5 +1,7 @@
 package com.wachi.combat_tracker.tracker;
 
+import com.wachi.combat_tracker.Config;
+import com.wachi.combat_tracker.WCombatTrackerMod;
 import com.wachi.combat_tracker.events.combat.ent.CombatActiveEntTickEvent;
 import com.wachi.combat_tracker.events.combat.ent.CombatAddParticipantEvent;
 import com.wachi.combat_tracker.events.combat.CombatEvent;
@@ -12,7 +14,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.*;
 
@@ -20,8 +21,11 @@ public class Combat {
     public final List<CombatActive> participants = new ArrayList<>();
     public final List<CombatInactive> old_participants = new ArrayList<>();
     public final List<CombatRecord> combat_records = new ArrayList<>();
+    public final List<CombatRecord> to_forgot_records = new ArrayList<>();
+    public final List<CombatRecord> forgotten_records = new ArrayList<>();
 
-    public final long startTime = ServerLifecycleHooks.getCurrentServer().overworld().getGameTime();
+    public long emptyTime = -1;
+    public final long startTime = WCombatTrackerMod.getGameTime();
 
     /**A map for every mod register its own data on combats*/
     public final Map<ResourceLocation, Object> API_MAP = new HashMap<>();
@@ -37,7 +41,20 @@ public class Combat {
         if(NeoForge.EVENT_BUS.post(new CombatEvent(this, CombatEvent.EventType.Tick)).isCanceled())
             return;
 
+        forgotten_records.addAll(to_forgot_records);
+        combat_records.removeAll(to_forgot_records);
+        to_forgot_records.clear();
         tickParticipants();
+
+        if(participants.size() <= 1) {
+            if(emptyTime == -1)
+                emptyTime = WCombatTrackerMod.getGameTime();
+
+            else if(emptyTime + Config.CombatOverTime < WCombatTrackerMod.getGameTime())
+                if (!NeoForge.EVENT_BUS.post(new CombatEvent(this, CombatEvent.EventType.End)).isCanceled()) {
+                    CombatManager.removing.add(this);
+                }
+        } else emptyTime = -1;
     }
 
     void onDamage(Entity victim, DamageSource dmgSrc, float amount){
@@ -80,10 +97,6 @@ public class Combat {
             participants.remove(cL);
             old_participants.add(new CombatInactive(cL));
         });
-
-        if(participants.size() <= 1)
-            if(!NeoForge.EVENT_BUS.post(new CombatEvent(this, CombatEvent.EventType.End)).isCanceled())
-                CombatManager.removing.add(this);
     }
 
     //creates a combat
@@ -166,6 +179,22 @@ public class Combat {
         NeoForge.EVENT_BUS.post(new CombatAddParticipantEvent(cL, this, cR));
         participants.add(cL);
         return cL;
+    }
+
+    public List<CombatRecord> getActionsOfXtoY(UUID executor, UUID target){
+        List<CombatRecord> l = new ArrayList<>();
+        for(CombatRecord r : combat_records)
+            if(r.executor.equals(executor) && r.objetive.equals(target))
+                l.add(r);
+        return l;
+    }
+
+    public List<CombatRecord> getActionsOf(UUID e){
+        List<CombatRecord> l = new ArrayList<>();
+        for(CombatRecord r : combat_records)
+            if(r.executor.equals(e))
+                l.add(r);
+        return l;
     }
 
     String getDebugLog(){

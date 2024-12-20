@@ -1,5 +1,6 @@
 package com.wachi.combat_tracker;
 
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -22,6 +23,10 @@ public class WCombatTrackerMod
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
+    }
+
+    public static Long getGameTime() {
+        return ServerLifecycleHooks.getCurrentServer().overworld().getGameTime();
     }
 
 }
