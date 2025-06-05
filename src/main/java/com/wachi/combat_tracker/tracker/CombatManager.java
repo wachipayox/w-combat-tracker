@@ -9,8 +9,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,13 +35,11 @@ public class CombatManager {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    static void onEntityHit(LivingHurtEvent event){
+    static void onEntityHit(LivingDamageEvent.Post event){
         LivingEntity victim = event.getEntity();
         Entity source = event.getSource().getEntity();
         DamageSource dmgSrc = event.getSource();
-        float amount = event.getAmount();
-        amount = ((ILE) victim).callGetDamageAfterArmorAbsorb(dmgSrc, amount);
-        amount = ((ILE) victim).callGetDamageAfterMagicAbsorb(dmgSrc, amount);
+        float amount = event.getNewDamage();
         amount = victim.getHealth() - amount >= 0 ? amount : victim.getHealth();
 
         if(source == null || victim.level().isClientSide)
